@@ -21,8 +21,9 @@ public:
     // Write your code here.
     // Do not edit the return statement of this method.
     BST* currNode = this;
+
     while (currNode){
-        if (val > currNode->value && currNode->right == nullptr){
+        if (val >= currNode->value && currNode->right == nullptr){
             currNode->right = new BST(val);
             break;
         } else if (val < currNode->value && currNode->left == nullptr){
@@ -30,7 +31,7 @@ public:
             break;
         }
 
-        if (val > currNode->value) currNode = currNode->right;
+        if (val >= currNode->value) currNode = currNode->right;
         else if (val < currNode->value) currNode = currNode->left;
     }
     return *this;
@@ -53,34 +54,50 @@ public:
     return false;
   }
 
-  BST &remove(int val) {
-    // Write your code here.
-    // Do not edit the return statement of this method.
-    
-    return *this;
-  }
+  BST &remove(int val, BST* parent = nullptr ){
+    if (val < value){
+      if (left != nullptr){
+        left->remove(val,this);
+      }
+    } else if (val > value){
+      if (right != nullptr){
+        right->remove(val,this);
+      }
+    } else {
+      if (left != nullptr && right != nullptr){
+        value = right->getMinValue();
+        right->remove(value,this);
+      } else if (parent == nullptr){
+        if (left!= nullptr){
+          value = left->value;
+          right = left->right;
+          left = left->left;
+        } else if (right != nullptr){
+          value = right->value;
+          left = right->left;
+          right = right->right;
+        } else {
 
-  int getMinValue(){
-    BST* currNode = this;
-    while (currNode->left){
-      currNode = currNode->left;
-    }
-    return currNode->value;
-  }
-
-  vector<BST*> getNodeRemoveData(int val, BST* parent){
-    BST* currNode = this;
-    while (currNode){
-      if (currNode->value == val) break;
-
-      parent = currNode;
-      if (val >= currNode->value ){
-        currNode = parent->right;
-      } else if (val < currNode->value ){
-        currNode = parent->left;
+        }
+      } else if (parent->left == this){
+        parent->left = left != nullptr ?  left : right;
+      } else if (parent->right == this){
+        parent->right = left != nullptr ? left : right;
       }
     }
 
-    return vector<BST*> {parent,currNode};
-  }
+    return *this; 
+      
+  };  
+  
+
+  // This method will return the min value of a node
+  int getMinValue(){
+    if (left == nullptr){
+      return value;
+    } else {
+      return left->getMinValue();
+    }
+  };  
+  
 };
